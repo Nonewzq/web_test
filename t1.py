@@ -34,12 +34,25 @@ def f3(request):
 
 
 def f4(request):
+    import pymysql
+    conn = pymysql.connect(host="127.0.0.1", port=3306, user="root", passwd="123456", db = "test")
+    cursor = conn.cursor(cursor=pymysql.cursors.DictCursor)
+    cursor.execute("select id,user,password from user")
+    user_list = cursor.fetchall()
+    cursor.close()
+
+    connent = ""
+    for row in user_list:
+        ht_db = "<tr><th>%s</th><th>%s</th><th>%s</th></tr>" % (row['id'], row['user'], row['password'])
+        connent += ht_db
 
     f = open("dbtest.html", "r")
-    data = f.read()
-    data = bytes(data,encoding="utf-8")
+    template = f.read()
+    template = template.replace("@@@test@@@", connent)
+    template = bytes(template, encoding="utf-8")
     f.close()
-    return data
+    return template
+
 
 routers = {
     "/xxx": f1,
